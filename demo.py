@@ -1,3 +1,3 @@
 import GPlayer
 
-gplayer = GPlayer()
+gplayer = GPlayer.GPlayer()
