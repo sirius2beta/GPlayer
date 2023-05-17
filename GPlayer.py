@@ -23,12 +23,12 @@ class GPlayer:
 		self.pipelinesexist = []
 		self.pipelines = []
 		self.pipelines_state = []
-		self.cameraformat = get_video_format()
+		self.cameraformat = self.get_video_format()
 		
 		GObject.threads_init()
 		Gst.init(None)
 
-		createPipelines()
+		self.createPipelines()
 		
 
 
@@ -76,7 +76,7 @@ class GPlayer:
 			except:
 				print(f"Secondary unreached: {self.S_CLIENT_IP}:{self.OUT_PORT}")
 
-	def createPipelines():
+	def createPipelines(self):
 		for i in self.camera_format:
 			j = int(i.split()[0][5]);
 			if(j not in self.pipelinesexist):
