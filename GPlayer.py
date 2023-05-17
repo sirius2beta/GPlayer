@@ -136,7 +136,7 @@ class GPlayer:
 
 			if header == 'qformat':
 				print("format")
-				msg = 'format '+BOAT_NAME+'\n'+'\n'.join(cameraformat)
+				msg = 'format '+BOAT_NAME+'\n'+'\n'.join(self.camera_format)
 
 				client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
 				client.sendto(msg.encode(),(self.S_CLIENT_IP,self.OUT_PORT))
@@ -149,7 +149,7 @@ class GPlayer:
 				encoder, mid, quality, ip, port = indata.split()[6:]
 				print(quality, ip, port)
 
-				if(' '.join(cformat) not in cameraformat):
+				if(' '.join(cformat) not in self.camera_format):
 					print('format error')
 				else:
 					gstring = 'v4l2src device=/dev/'+cformat[0]
