@@ -127,7 +127,7 @@ class GPlayer:
 			header = indata.split()[0]
 
 			if header == 'HB':
-				BOAT_NAME = indata.split()[2]
+				self.BOAT_NAME = indata.split()[2]
 				primary = indata.split()[3]
 				if primary == 'P':
 					self.P_CLIENT_IP = indata.split()[1]
@@ -136,7 +136,7 @@ class GPlayer:
 
 			if header == 'qformat':
 				print("format")
-				msg = 'format '+BOAT_NAME+'\n'+'\n'.join(self.camera_format)
+				msg = 'format '+self.BOAT_NAME+'\n'+'\n'.join(self.camera_format)
 
 				self.client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
 				self.client.sendto(msg.encode(),(self.S_CLIENT_IP,self.OUT_PORT))
