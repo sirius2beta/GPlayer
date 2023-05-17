@@ -8,41 +8,72 @@ import socket
 gi.require_version("Gst", "1.0")
 from gi.repository import Gst, GLib, GObject
 
-BOAT_NAME = 'usv1'
-GROUND_NAME = 'ground1'
+class GPlayer:
+	def __init__(self):
+		self.BOAT_NAME = 'usv1'
+		self.GROUND_NAME = 'ground1'
 
-PC_IP='10.10.10.205'
-SERVER_IP = ''
-CLIENT_IP = '127.0.0.1' #PC IP
-S_CLIENT_IP = '127.0.0.1'
-OUT_PORT = 50008
-IN_PORT = 50007 
+		self.PC_IP='10.10.10.205'
+		self.SERVER_IP = ''
+		self.P_CLIENT_IP = '127.0.0.1' #PC IP
+		self.S_CLIENT_IP = '127.0.0.1'
+		self.OUT_PORT = 50008
+		self.IN_PORT = 50007 
 
-pipelinesexist = []
-pipelines = []
-pipelines_state = []
-cameraformat = []
+		self.pipelinesexist = []
+		self.pipelines = []
+		self.pipelines_state = []
+		self.cameraformat = []
+		
+		GObject.threads_init()
+		Gst.init(None)
 
-def aliveSignal():
-	global BOAT_NAME
-	global CLIENT_IP
-	global S_CLIENT_IP
-	print('client started...')
-	t = threading.current_thread()
-	while getattr(t, "do_run", True):
-		beat = 'alive ' + BOAT_NAME
-		try:
-			client.sendto(beat.encode(),(CLIENT_IP,OUT_PORT))
-			time.sleep(0.5)
-			print(f"Primary send to: {CLIENT_IP}:{OUT_PORT}")
-		except:
-			print(f"Primary unreached: {CLIENT_IP}:{OUT_PORT}")
-		try:
-			client.sendto(beat.encode(),(S_CLIENT_IP,OUT_PORT))
-			time.sleep(0.5)
-			print(f"Secondarysend to: {S_CLIENT_IP}:{OUT_PORT}")
-		except:
-			print(f"Secondary unreached: {S_CLIENT_IP}:{OUT_PORT}")
+		pipelinesexist, pipelines, cameraformat = createPipelines()
+		for i in pipelines:
+			pipelines_state.append(False)
+
+
+		server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		server.bind((SERVER_IP, IN_PORT))
+		server.setblocking(0)
+
+		print(f'server started at {IN_PORT}')
+		print(f'send message to {P_CLIENT_IP}, Port: {IN_PORT}')
+
+		lock = threading.Lock()
+
+		thread_cli = threading.Thread(target=aliveSignal)
+		thread_ser = threading.Thread(target=listenLoop, args=(server,))
+
+		thread_cli.Client_ip = "192.168.0.1"
+
+		thread_cli.start()
+		thread_ser.start()
+		
+	def __del__(self):
+		thread_ser.do_run = False
+		thread_cli.do_run = False
+		thread_cli.join()
+		thread_ser.join()
+
+	def aliveSignal():
+		print('client started...')
+		t = threading.current_thread()
+		while getattr(t, "do_run", True):
+			beat = 'alive ' + self.BOAT_NAME
+			try:
+				client.sendto(beat.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
+				time.sleep(0.5)
+				print(f"Primary send to: {self.P_CLIENT_IP}:{self.OUT_PORT}")
+			except:
+				print(f"Primary unreached: {self.P_CLIENT_IP}:{self.OUT_PORT}")
+			try:
+				client.sendto(beat.encode(),(self.S_CLIENT_IP, self.OUT_PORT))
+				time.sleep(0.5)
+				print(f"Secondarysend to: {self.S_CLIENT_IP}:{self.OUT_PORT}")
+			except:
+				print(f"Secondary unreached: {self.S_CLIENT_IP}:{self.OUT_PORT}")
 
 def createPipelines():
 	_pipelines = []
@@ -86,10 +117,7 @@ def get_video_format():
 
 def listenLoop(ser):
 	
-	global BOAT_NAME
-	global CLIENT_IP
-	global S_CLIENT_IP
-	global OUT_PORT
+	
 	print('server started...')
 	t = threading.current_thread()
 	while getattr(t, "do_run", True):
@@ -108,16 +136,16 @@ def listenLoop(ser):
 			BOAT_NAME = indata.split()[2]
 			primary = indata.split()[3]
 			if primary == 'P':
-				CLIENT_IP = indata.split()[1]
+				self.P_CLIENT_IP = indata.split()[1]
 			else:
-				S_CLIENT_IP = indata.split()[1]
+				self.S_CLIENT_IP = indata.split()[1]
 
 		if header == 'qformat':
 			print("format")
 			msg = 'format '+BOAT_NAME+'\n'+'\n'.join(cameraformat)
 
-			client.sendto(msg.encode(),(CLIENT_IP,OUT_PORT))
-			client.sendto(msg.encode(),(S_CLIENT_IP,OUT_PORT))
+			client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
+			client.sendto(msg.encode(),(self.S_CLIENT_IP,self.OUT_PORT))
 		if header == 'cmd':
 			print("cmd")
 			print(indata)
@@ -206,70 +234,10 @@ def listenLoop(ser):
 
 
 
-# The callback for when the client receives a CONNECT response from the server.
-def on_connect(client, userdata, flags, rc):
-	print("Connected with result code "+str(rc))
-	# Subscribing in on_connect() means that if we lose the connection and
-	# reconnect then subscriptions will be renewed.
-	client.subscribe(BOAT_NAME)
-	aliveThread = threading.Thread(target = aliveSignal)
-	aliveThread.start()
 
 # The callback for when a PUBLISH message is received from the server.
 
 
 
-GObject.threads_init()
-Gst.init(None)
 
-pipelinesexist, pipelines, cameraformat = createPipelines()
-for i in pipelines:
-	pipelines_state.append(False)
 
-#client = mqtt.Client()
-#client.on_connect = on_connect
-#client.on_message = on_message
-#while True:
-#	try:
-#		client.connect("test.mosquitto.org", 1883, 60)
-#	except:
-#		time.sleep(10)
-#		continue
-#	break
-
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
-
-#client.loop_forever()
-
-server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server.bind((SERVER_IP, IN_PORT))
-server.setblocking(0)
-
-print(f'server started at {IN_PORT}')
-print(f'send message to {CLIENT_IP}, Port: {IN_PORT}')
-
-lock = threading.Lock()
-
-thread_cli = threading.Thread(target=aliveSignal)
-thread_ser = threading.Thread(target=listenLoop, args=(server,))
-
-thread_cli.Client_ip = "192.168.0.1"
-
-thread_cli.start()
-thread_ser.start()
-
-try:
-	input("Press the Enter key to exit: ")
-except:
-	thread_ser.do_run = False
-	thread_cli.do_run = False
-	thread_cli.join()
-	thread_ser.join()
-thread_ser.do_run = False
-thread_cli.do_run = False
-thread_cli.join()
-thread_ser.join()
