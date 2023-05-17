@@ -138,8 +138,8 @@ class GPlayer:
 				print("format")
 				msg = 'format '+BOAT_NAME+'\n'+'\n'.join(self.camera_format)
 
-				client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
-				client.sendto(msg.encode(),(self.S_CLIENT_IP,self.OUT_PORT))
+				self.client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
+				self.client.sendto(msg.encode(),(self.S_CLIENT_IP,self.OUT_PORT))
 			if header == 'cmd':
 				print("cmd")
 				print(indata)
