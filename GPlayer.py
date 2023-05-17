@@ -71,7 +71,7 @@ class GPlayer:
 				print(f"Primary unreached: {self.P_CLIENT_IP}:{self.OUT_PORT}")
 			# Send secondary heartbeat every 0.5s
 			try:
-				self.lient.sendto(beat.encode(),(self.S_CLIENT_IP, self.OUT_PORT))
+				self.client.sendto(beat.encode(),(self.S_CLIENT_IP, self.OUT_PORT))
 				time.sleep(0.5)
 				print(f"Secondarysend to: {self.S_CLIENT_IP}:{self.OUT_PORT}")
 			except:
