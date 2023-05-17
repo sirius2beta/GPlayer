@@ -23,6 +23,7 @@ class GPlayer:
 		self.pipelinesexist = []
 		self.pipelines = []
 		self.pipelines_state = []
+		self.cameraformat = []
 		self.cameraformat = self.get_video_format()
 		
 		GObject.threads_init()
@@ -110,8 +111,6 @@ class GPlayer:
 					elif j.split()[0] == 'Interval:':
 						self.camera_format.append('video{} {} width={} height={} framerate={}'.format(i,form, width, height , j.split()[3][1:].split('.')[0]))
 						print('video{} {} width={} height={} framerate={}'.format(i,form, width, height , j.split()[3][1:].split('.')[0]))
-		return self.camera_format
-
 	def listenLoop(self):
 		print('server started...')
 		run = True
