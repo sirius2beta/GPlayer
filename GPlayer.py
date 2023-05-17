@@ -200,24 +200,24 @@ class GPlayer:
 					print(gstring)
 					print(cformat[1])
 					print(cformat[1][5:])
-					videoindex = pipelinesexist.index(int(cformat[0][5:]))
+					videoindex = self.pipelinesexist.index(int(cformat[0][5:]))
 
 
-					if pipelines_state[videoindex] == True:
-						pipelines[videoindex].set_state(Gst.State.NULL)
-						pipelines[videoindex] = Gst.parse_launch(gstring)
-						pipelines[videoindex].set_state(Gst.State.PLAYING)
+					if self.pipelines_state[videoindex] == True:
+						self.pipelines[videoindex].set_state(Gst.State.NULL)
+						self.pipelines[videoindex] = Gst.parse_launch(gstring)
+						self.pipelines[videoindex].set_state(Gst.State.PLAYING)
 
 					else:
-						pipelines[videoindex] = Gst.parse_launch(gstring)
-						pipelines[videoindex].set_state(Gst.State.PLAYING)
-						pipelines_state[videoindex] = True
+						self.pipelines[videoindex] = Gst.parse_launch(gstring)
+						self.pipelines[videoindex].set_state(Gst.State.PLAYING)
+						self.pipelines_state[videoindex] = True
 			if header == 'quit':
 				video = int(indata.split()[1][5:])
-				if video in pipelinesexist:
-					videoindex = pipelinesexist.index(video)
-					pipelines[videoindex].set_state(Gst.State.NULL)
-					pipelines_state[videoindex] = False
+				if video in self.pipelinesexist:
+					videoindex = self.pipelinesexist.index(video)
+					self.pipelines[videoindex].set_state(Gst.State.NULL)
+					self.pipelines_state[videoindex] = False
 					print("quit : video"+str(video))
 
 
