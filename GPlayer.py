@@ -23,8 +23,8 @@ class GPlayer:
 		self.pipelinesexist = []
 		self.pipelines = []
 		self.pipelines_state = []
-		self.cameraformat = []
-		self.cameraformat = self.get_video_format()
+		self.camera_format = []
+		self.camera_format = self.get_video_format()
 		
 		GObject.threads_init()
 		Gst.init(None)
