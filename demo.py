@@ -1,1 +1,3 @@
+import GPlayer
 
+gplayer = GPlayer()
