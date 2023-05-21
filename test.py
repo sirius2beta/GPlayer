@@ -1,5 +1,6 @@
 def get_video_format():	
 		#Check camera device
+		camera_format = []
 		for i in range(0,10):
 				try:
 					cmd = "v4l2-ctl -d /dev/video{} --list-formats-ext".format(i)
