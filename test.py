@@ -14,7 +14,7 @@ def get_video_format():
 					if len(j.split()) == 0:
 						print("con")
 						continue
-					elif j.split()[0][0] =='Pixel':
+					elif j.split()[0] =='Pixel':
 						form = j.split()[2][1:-1]
 					elif j.split()[0] =='Size:':
 						size = j.split()[2]
