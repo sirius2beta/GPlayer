@@ -22,4 +22,4 @@ def get_video_format():
 						print('video{} {} width={} height={} framerate={}'.format(i,form, width, height , j.split()[3][1:].split('.')[0]))
 		return camera_format
   
-get_video_format()
+print(get_video_format())
