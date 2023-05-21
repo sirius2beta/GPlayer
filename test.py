@@ -11,6 +11,7 @@ def get_video_format():
 				new_line_list = list()
 				for j in line_list:
 					if len(j.split()) == 0:
+						print("con")
 						continue
 					elif j.split()[0][0] =='Pixel':
 						form = j.split()[2][1:-1]
