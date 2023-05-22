@@ -236,10 +236,10 @@ class GPlayer:
 					self.pipelines[videoindex].set_state(Gst.State.NULL)
 					self.pipelines_state[videoindex] = False
 					print("quit : video"+str(video))
-			elif on_msg:
+			elif self.on_msg:
 				try:
 					#on_msg(header, message)
-					on_msg(header, indata.pop(0))
+					self.on_msg(header, indata.pop(0))
 				except Exception as err:
 					print(f'error on_msg callback function: {err}')
 
