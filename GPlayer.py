@@ -26,6 +26,8 @@ class GPlayer:
 		self.camera_format = []
 		self.get_video_format()
 		
+		self._on_msg = None
+		
 		GObject.threads_init()
 		Gst.init(None)
 
@@ -55,6 +57,21 @@ class GPlayer:
 		self.thread_cli.join()
 		self.thread_ser.join()
 
+	def sendMsg(self, msg):
+		# Send primary heartbeat every 0.5s
+			try:
+				self.client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
+				
+				print(f"Primary send to: {self.P_CLIENT_IP}:{self.OUT_PORT}")
+			except:
+				print(f"Primary unreached: {self.P_CLIENT_IP}:{self.OUT_PORT}")
+			# Send secondary heartbeat every 0.5s
+			try:
+				self.client.sendto(msg.encode(),(self.S_CLIENT_IP, self.OUT_PORT))
+				print(f"Secondarysend to: {self.S_CLIENT_IP}:{self.OUT_PORT}")
+			except:
+				print(f"Secondary unreached: {self.S_CLIENT_IP}:{self.OUT_PORT}")
+	
 	def aliveLoop(self):
 		print('client started...')
 		run = True
@@ -134,13 +151,13 @@ class GPlayer:
 				else:
 					self.S_CLIENT_IP = indata.split()[1]
 
-			if header == 'qformat':
+			elif header == 'qformat':
 				print("format")
 				msg = 'format '+self.BOAT_NAME+'\n'+'\n'.join(self.camera_format)
 
 				self.client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
 				self.client.sendto(msg.encode(),(self.S_CLIENT_IP,self.OUT_PORT))
-			if header == 'cmd':
+			elif header == 'cmd':
 				print("cmd")
 				print(indata)
 				cformat = indata.split()[1:6]
@@ -212,16 +229,35 @@ class GPlayer:
 						self.pipelines[videoindex] = Gst.parse_launch(gstring)
 						self.pipelines[videoindex].set_state(Gst.State.PLAYING)
 						self.pipelines_state[videoindex] = True
-			if header == 'quit':
+			elif header == 'quit':
 				video = int(indata.split()[1][5:])
 				if video in self.pipelinesexist:
 					videoindex = self.pipelinesexist.index(video)
 					self.pipelines[videoindex].set_state(Gst.State.NULL)
 					self.pipelines_state[videoindex] = False
 					print("quit : video"+str(video))
+			elif on_msg:
+				try:
+					#on_msg(header, message)
+					on_msg(header, indata.pop(0))
+				except Exception as err:
+					print(f'error on_msg callback function: {err}')
 
 
-
+	@property
+	def on_msg(self):
+		return self._on_msg
+	
+	@on_msg.setter
+	def on_msg(self, func):
+		self._on_msg = func
+	
+	def on_msg_callback(self):
+		def decorator(func):
+			self.on_msg = func
+			return func
+		return decorator
+			
 
 # The callback for when a PUBLISH message is received from the server.
 
