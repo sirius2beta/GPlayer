@@ -90,9 +90,8 @@ class GPlayer:
 	
 
 #get video format from existing camera devices
-	def get_video_format():	
+	def get_video_format(self):	
 		#Check camera device
-		camera_format = list()
 		for i in range(0,10):
 				try:
 					cmd = "v4l2-ctl -d /dev/video{} --list-formats-ext".format(i)
@@ -110,9 +109,8 @@ class GPlayer:
 						size = j.split()[2]
 						width, height = size.split('x')
 					elif j.split()[0] == 'Interval:':
-						camera_format.append('video{} {} width={} height={} framerate={}'.format(i,form, width, height , j.split()[3][1:].split('.')[0]))
+						self.camera_format.append('video{} {} width={} height={} framerate={}'.format(i,form, width, height , j.split()[3][1:].split('.')[0]))
 						print('video{} {} width={} height={} framerate={}'.format(i,form, width, height , j.split()[3][1:].split('.')[0]))
-		return camera_format
 	def listenLoop(self):
 		print('server started...')
 		run = True
