@@ -21,6 +21,7 @@ while True:
   if not ret:
     print('empty frame')
     break
+    cv2.imshow('send', frame)
     out_send.write(frame)
     if cv2.waitKey(1)&0xFF == ord('q'):
       break
