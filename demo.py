@@ -18,7 +18,7 @@ out_send = cv2.VideoWriter('appsrc ! videoconvert ! omxh264enc ! rtph264pay pt=9
                            ,cv2.CAP_GSTREAMER\
                            ,0\
                            , fps\
-                           , (w,h)\
+                           , (int(w), int(h))\
                            , True)
 if not cap_send.isOpened() or not out_send.isOpened():
   print('VideoCapture or VideoWriter not opened')
