@@ -241,7 +241,7 @@ class GPlayer:
 					#on_msg(header, message)
 					indata = indata.split()
 					indata.pop(0)
-					" ".join(indata)
+					indata = " ".join(indata)
 					self.on_msg(header, indata)
 					print('on msg')
 				except Exception as err:
