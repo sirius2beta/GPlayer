@@ -1,4 +1,5 @@
 import GPlayer
+import time
 
 def on_msg(topic, message):
   print('onMsg callback;')
@@ -7,5 +8,7 @@ def on_msg(topic, message):
 
 gplayer = GPlayer.GPlayer()
 gplayer.on_msg = on_msg
-gplayer.sendMsg('Hello PC')
+while true:
+  gplayer.sendMsg('Hello PC')
+  time.sleep(2)
 
