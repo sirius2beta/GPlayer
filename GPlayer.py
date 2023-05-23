@@ -239,7 +239,8 @@ class GPlayer:
 			elif self.on_msg:
 				try:
 					#on_msg(header, message)
-					self.on_msg(header, indata.split()[1])
+					indata.pop(0)
+					self.on_msg(header, indata)
 					print('on msg')
 				except Exception as err:
 					print(f'error on_msg callback function: {err}')
