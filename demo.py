@@ -10,8 +10,8 @@ def on_msg(topic, message):
 #gplayer = GPlayer.GPlayer()
 #gplayer.on_msg = on_msg
 
-cap_send = cv2.VideoCapture('videotestsrc ! video/x-raw,framerate=20/1 ! videoscale ! videoconvert ! appsink', cv2.CAP_GSTREAMER)
-out_send = cv2.VideoWriter('appsrc ! videoconvert ! omxh264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240',cv2.CAP_GSTREAMER,0, 20, (320,240), True)
+cap_send = cv2.VideoCapture('v4l2src device=/dev/video0 !  video/x-raw, format=YUY2, width=640, height=480, framerate=30/1 ! videoconvert', cv2.CAP_GSTREAMER)
+out_send = cv2.VideoWriter('appsrc ! videoconvert ! omxh264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240',cv2.CAP_GSTREAMER,0, 30, (640,480), True)
 if not cap_send.isOpened() or not out_send.isOpened():
   print('VideoCapture or VideoWriter not opened')
   exit(0)
