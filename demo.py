@@ -1,10 +1,10 @@
 import GPlayer
 
-def onMsg(topic, message):
+def on_msg(topic, message):
   print('onMsg callback;')
   if topic == 'testcmd':
     print(f'{topic} : {message}')
 
 gplayer = GPlayer.GPlayer()
-gplayer.onMsg = onMsg
+gplayer.on_msg = on_msg
 
