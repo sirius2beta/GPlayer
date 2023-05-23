@@ -2,6 +2,7 @@ import GPlayer
 import time
 import cv2
 
+
 def on_msg(topic, message):
   print('onMsg callback;')
   if topic == 'testcmd':
