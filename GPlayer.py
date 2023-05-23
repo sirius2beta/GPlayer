@@ -239,7 +239,7 @@ class GPlayer:
 			elif self.on_msg:
 				try:
 					#on_msg(header, message)
-					indata.pop(0)
+					indata = " ".joint(indata.split().pop(0))
 					self.on_msg(header, indata)
 					print('on msg')
 				except Exception as err:
