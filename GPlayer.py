@@ -240,6 +240,7 @@ class GPlayer:
 				try:
 					#on_msg(header, message)
 					self.on_msg(header, indata.pop(0))
+					print('on msg')
 				except Exception as err:
 					print(f'error on_msg callback function: {err}')
 
