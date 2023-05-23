@@ -15,6 +15,10 @@ out_send = cv2.VideoWriter('appsrc ! omxh264enc ! rtph264pay pt=96 config-interv
 if not cap_send.isOpened() or not out_send.isOpened():
   print('VideoCapture or VideoWriter not opened')
   exit(0)
+w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+fps = cap.get(cv2.CAP_PROP_FPS)
+print('Src opened, %dx%d @ %d fps' % (w, h, fps))
 
 while True:
   ret,frame = cap_send.read()
