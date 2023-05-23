@@ -7,4 +7,5 @@ def on_msg(topic, message):
 
 gplayer = GPlayer.GPlayer()
 gplayer.on_msg = on_msg
+gplayer.sendMsg('Hello PC')
 
