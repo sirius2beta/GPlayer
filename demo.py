@@ -8,7 +8,7 @@ def on_msg(topic, message):
 
 gplayer = GPlayer.GPlayer()
 gplayer.on_msg = on_msg
-while true:
+while True:
   gplayer.sendMsg('Hello PC')
   time.sleep(2)
 
