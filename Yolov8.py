@@ -14,21 +14,6 @@ from numpy import ndarray
 os.environ['CUDA_MODULE_LOADING'] = 'LAZY'
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
-CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-           'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
-           'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-           'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
-           'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-           'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-           'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
-           'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
-           'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
-           'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
-           'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
-           'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
-           'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
-           'scissors', 'teddy bear', 'hair drier', 'toothbrush')
-
 class TRTEngine:
 
     def __init__(self, weight: Union[str, Path]) -> None:
@@ -199,7 +184,6 @@ def letterbox(im: ndarray,
                             cv2.BORDER_CONSTANT,
                             value=color)  # add border
     return im, r, (dw, dh)
-
 def blob(im: ndarray, return_seg: bool = False) -> Union[ndarray, Tuple]:
     if return_seg:
         seg = im.astype(np.float32) / 255
@@ -210,7 +194,6 @@ def blob(im: ndarray, return_seg: bool = False) -> Union[ndarray, Tuple]:
         return im, seg
     else:
         return im
-	
 enggine = TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
 image = cv2.imread('data/zidane.jpg')
@@ -219,14 +202,26 @@ rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 tensor = blob(rgb, return_seg=False)
 dwdh = np.array(dwdh * 2, dtype=np.float32)
 tensor = np.ascontiguousarray(tensor)
-
 results = enggine(tensor)
-results
 
 bboxes, scores, labels = results
 bboxes -= dwdh
 bboxes /= ratio
 
+CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
+           'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
+           'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+           'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
+           'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
+           'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+           'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
+           'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
+           'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
+           'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
+           'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
+           'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
+           'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
+           'scissors', 'teddy bear', 'hair drier', 'toothbrush')
 for (bbox, score, label) in zip(bboxes, scores, labels):
     bbox = bbox.round().astype(np.int32).tolist()
     cls_id = int(label)
@@ -238,4 +233,4 @@ for (bbox, score, label) in zip(bboxes, scores, labels):
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.75, [225, 255, 255],
                 thickness=2)
-cv2.imwrite("output.jpg", image)
+cv2.imwrite("out.jpg", image)
