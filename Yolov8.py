@@ -203,6 +203,7 @@ tensor = blob(rgb, return_seg=False)
 dwdh = np.array(dwdh * 2, dtype=np.float32)
 tensor = np.ascontiguousarray(tensor)
 results = enggine(tensor)
+print(results)
 
 bboxes, scores, labels = results
 bboxes -= dwdh
