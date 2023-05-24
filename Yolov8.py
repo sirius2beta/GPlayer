@@ -238,3 +238,4 @@ for (bbox, score, label) in zip(bboxes, scores, labels):
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.75, [225, 255, 255],
                 thickness=2)
+cv2.imwrite("output.jpg", image)
