@@ -3,7 +3,7 @@ from ultralytics import YOLO
 from ultralytics.yolo.utils.plotting import Annotator
 
 
-model = YOLO('yolov8n.pt')
+model = YOLO('yolov8s.pt')
 cap = cv2.VideoCapture(0)
 
 
