@@ -20,6 +20,7 @@ while True:
         for r in results:
             for box in r.boxes:
                 b = box.xyxy[0]
+                c = box.cls
                 annotator.box_label(b, f"{r.names[int(c)]} {float(box.conf):.2}")
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
