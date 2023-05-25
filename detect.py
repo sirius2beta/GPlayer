@@ -23,7 +23,7 @@ while True:
                 annotator.box_label(b, f"{r.names[int(c)]} {float(box.conf):.2}")
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        cv2.imshow(“windows”, img)
+        cv2.imshow("windows", img)
         key = cv2.waitKey(1)
         if key == 27:
             break
