@@ -211,12 +211,20 @@ CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
            'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
            'scissors', 'teddy bear', 'hair drier', 'toothbrush')      
 def vr():
+    global write
+    global frame
     out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240'\
                                    ,cv2.CAP_GSTREAMER\
                                    ,0\
                                    , 30\
                                    , (1920, 1080)\
                                    , True)
+    while True:
+        if write == true:
+            if out_send.isOpened():
+                out_send.write(frame)
+            
+write = false
 thread_cli = threading.Thread(target=vr)
 enggine = TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
@@ -284,8 +292,7 @@ while True:
                   0.75, [225, 255, 255],
                   thickness=2)
 
-  if out_send.isOpened():
-    out_send.write(frame)
+  
   if cv2.waitKey(1)&0xFF == ord('q'):
     break
 cap_send.release()
