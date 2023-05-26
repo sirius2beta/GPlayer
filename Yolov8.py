@@ -223,10 +223,11 @@ def vr():
         print('VideoWriter not opened')
         exit(0)
     while True:
-        if out_send.isOpened():
-            out_send.write(frame)
-        if cv2.waitKey(1)&0xFF == ord('q'):
-            break
+        if play:
+            if out_send.isOpened():
+                out_send.write(frame)
+            if cv2.waitKey(1)&0xFF == ord('q'):
+                break
     out_send.release()
             
 
@@ -253,6 +254,7 @@ h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
 fps = cap_send.get(cv2.CAP_PROP_FPS)
 
 results = enggine(tensor)
+
 if not cap_send.isOpened():
   print('VideoCapture not opened')
   exit(0)
@@ -262,10 +264,11 @@ if not cap_send.isOpened():
 print('Src opened, %dx%d @ %d fps' % (w, h, fps))
 
 
-
+play = False
 
 thread_cli.start()
 while True:
+  play = false
   ret,frame = cap_send.read()
   if not ret:
     print('empty frame')
@@ -294,7 +297,8 @@ while True:
                   cv2.FONT_HERSHEY_SIMPLEX,
                   0.75, [225, 255, 255],
                   thickness=2)
-
+    
+  play = True
   
   if cv2.waitKey(1)&0xFF == ord('q'):
     break
