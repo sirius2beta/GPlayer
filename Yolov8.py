@@ -125,7 +125,7 @@ while True:
   if not ret:
     print('empty frame')
     break
-  bgr, ratio, dwdh = letterbox(image, (W, H))
+  bgr, ratio, dwdh = letterbox(frame, (W, H))
   rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
   tensor = blob(rgb, return_seg=False)
   dwdh = np.array(dwdh * 2, dtype=np.float32)
@@ -139,8 +139,8 @@ while True:
       cls_id = int(label)
       cls = CLASSES[cls_id]
       color = (0,255,0)
-      cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
-      cv2.putText(image,
+      cv2.rectangle(frame, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
+      cv2.putText(frame,
                   f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
                   cv2.FONT_HERSHEY_SIMPLEX,
                   0.75, [225, 255, 255],
