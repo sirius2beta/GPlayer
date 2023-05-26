@@ -222,26 +222,11 @@ tensor = np.ascontiguousarray(tensor)
 
 
 results = enggine(tensor)
-results
 
-bboxes, scores, labels = results
-bboxes -= dwdh
-bboxes /= ratio
-
-for (bbox, score, label) in zip(bboxes, scores, labels):
-    bbox = bbox.round().astype(np.int32).tolist()
-    cls_id = int(label)
-    cls = CLASSES[cls_id]
-    color = (0,255,0)
-    cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
-    cv2.putText(image,
-                f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.75, [225, 255, 255],
-                thickness=2)
 
 video_pipeline = 'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1! videoconvert ! video/x-raw,format=BGR ! appsink'
 cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
+results = enggine(tensor)
 w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
 h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
 fps = cap_send.get(cv2.CAP_PROP_FPS)
@@ -251,6 +236,7 @@ out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=
                            , fps\
                            , (int(w), int(h))\
                            , True)
+results = enggine(tensor)
 if not cap_send.isOpened():
   print('VideoCapture not opened')
   exit(0)
