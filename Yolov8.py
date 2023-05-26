@@ -99,14 +99,17 @@ while True:
   if not ret:
     print('empty frame')
     break
+  enggine = TRTE.TRTEngine('yolov8s.engine')
+  H, W = enggine.inp_info[0].shape[-2:]
+  
+  results = enggine(tensor)
   bgr, ratio, dwdh = letterbox(frame, (W, H))
   rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
   tensor = blob(rgb, return_seg=False)
   dwdh = np.array(dwdh * 2, dtype=np.float32)
   tensor = np.ascontiguousarray(tensor)
-  enggine = TRTE.TRTEngine('yolov8s.engine')
-  H, W = enggine.inp_info[0].shape[-2:]
-  results = enggine(tensor)
+  
+  
   bboxes, scores, labels = results
   bboxes -= dwdh
   bboxes /= ratio
