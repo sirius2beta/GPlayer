@@ -268,7 +268,7 @@ play = False
 
 thread_cli.start()
 while True:
-  play = false
+  play = False
   ret,frame = cap_send.read()
   if not ret:
     print('empty frame')
