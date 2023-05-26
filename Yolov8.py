@@ -223,12 +223,13 @@ def vr():
         print('VideoWriter not opened')
         exit(0)
     while True:
-        if write == true:
-            if out_send.isOpened():
-                out_send.write(frame)
+        if out_send.isOpened():
+            out_send.write(frame)
+        if cv2.waitKey(1)&0xFF == ord('q'):
+            break
     out_send.release()
             
-write = False
+
 thread_cli = threading.Thread(target=vr)
 enggine = TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
