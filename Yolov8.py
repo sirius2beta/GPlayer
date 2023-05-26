@@ -57,7 +57,7 @@ def blob(im: ndarray, return_seg: bool = False) -> Union[ndarray, Tuple]:
 enggine = TRTE.TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
 
-def detect(image)
+def detect(image):
 
   bgr, ratio, dwdh = letterbox(image, (W, H))
   rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
