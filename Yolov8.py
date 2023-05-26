@@ -90,8 +90,7 @@ if not cap_send.isOpened():
 if not out_send.isOpened():
   print('VideoWriter not opened')
   exit(0)
-enggine = TRTE.TRTEngine('yolov8s.engine')
-H, W = enggine.inp_info[0].shape[-2:]
+
 
 print('Src opened, %dx%d @ %d fps' % (w, h, fps))
 
@@ -105,6 +104,8 @@ while True:
   tensor = blob(rgb, return_seg=False)
   dwdh = np.array(dwdh * 2, dtype=np.float32)
   tensor = np.ascontiguousarray(tensor)
+  enggine = TRTE.TRTEngine('yolov8s.engine')
+  H, W = enggine.inp_info[0].shape[-2:]
   results = enggine(tensor)
   bboxes, scores, labels = results
   bboxes -= dwdh
