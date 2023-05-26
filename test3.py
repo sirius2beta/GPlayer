@@ -210,10 +210,10 @@ CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
            'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
            'scissors', 'teddy bear', 'hair drier', 'toothbrush')      
 class engineA:
-	def __init__():
+	def __init__(self):
 		self.enggine = TRTEngine('yolov8s.engine')
 		self.H, self.W = self.enggine.inp_info[0].shape[-2:]
-	def detect(tensor):
+	def detect(self, tensor):
 		return self.enggine(tensor)
 		
 def vr():
