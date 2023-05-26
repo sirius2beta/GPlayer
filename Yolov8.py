@@ -12,6 +12,21 @@ import TRTEngine as TRTE
 os.environ['CUDA_MODULE_LOADING'] = 'LAZY'
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
+CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
+             'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
+             'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+             'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
+             'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
+             'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+             'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
+             'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
+             'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
+             'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
+             'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
+             'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
+             'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
+             'scissors', 'teddy bear', 'hair drier', 'toothbrush')
+
 def letterbox(im: ndarray,
               new_shape: Union[Tuple, List] = (640, 640),
               color: Union[Tuple, List] = (0, 0, 0)) \
@@ -71,20 +86,7 @@ def detect(image):
   bboxes -= dwdh
   bboxes /= ratio
 
-  CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-             'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
-             'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-             'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
-             'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-             'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-             'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
-             'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
-             'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
-             'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
-             'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
-             'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
-             'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
-             'scissors', 'teddy bear', 'hair drier', 'toothbrush')
+  
   for (bbox, score, label) in zip(bboxes, scores, labels):
       bbox = bbox.round().astype(np.int32).tolist()
       cls_id = int(label)
@@ -123,7 +125,27 @@ while True:
   if not ret:
     print('empty frame')
     break
-  frame = detect(frame)
+  bgr, ratio, dwdh = letterbox(image, (W, H))
+  rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+  tensor = blob(rgb, return_seg=False)
+  dwdh = np.array(dwdh * 2, dtype=np.float32)
+  tensor = np.ascontiguousarray(tensor)
+  results = enggine(tensor)
+  bboxes, scores, labels = results
+  bboxes -= dwdh
+  bboxes /= ratio
+  for (bbox, score, label) in zip(bboxes, scores, labels):
+      bbox = bbox.round().astype(np.int32).tolist()
+      cls_id = int(label)
+      cls = CLASSES[cls_id]
+      color = (0,255,0)
+      cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
+      cv2.putText(image,
+                  f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
+                  cv2.FONT_HERSHEY_SIMPLEX,
+                  0.75, [225, 255, 255],
+                  thickness=2)
+  
   if out_send.isOpened():
     out_send.write(frame)
   if cv2.waitKey(1)&0xFF == ord('q'):
