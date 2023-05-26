@@ -35,7 +35,7 @@ while True:
     break
   #cv2.imshow('send', frame)
   if out_send.isOpened():
-    out_send.write(frame)
+    #out_send.write(frame)
   if cv2.waitKey(1)&0xFF == ord('q'):
     break
 cap_send.release()
