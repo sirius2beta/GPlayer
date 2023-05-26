@@ -10,6 +10,7 @@ import pycuda.autoinit  # noqa F401
 import pycuda.driver as cuda
 import tensorrt as trt
 from numpy import ndarray
+import threading
 
 os.environ['CUDA_MODULE_LOADING'] = 'LAZY'
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
@@ -209,15 +210,14 @@ CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
            'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
            'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
            'scissors', 'teddy bear', 'hair drier', 'toothbrush')      
-class VR:
-    def __init__(self):
-        out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240'\
+def vr():
+    out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240'\
                                    ,cv2.CAP_GSTREAMER\
                                    ,0\
                                    , 30\
                                    , (1920, 1080)\
                                    , True)
-vr = VR()
+thread_cli = threading.Thread(target=vr)
 enggine = TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
 
