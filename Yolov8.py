@@ -219,10 +219,14 @@ def vr():
                                    , 30\
                                    , (1920, 1080)\
                                    , True)
+    if not out_send.isOpened():
+        print('VideoWriter not opened')
+        exit(0)
     while True:
         if write == true:
             if out_send.isOpened():
                 out_send.write(frame)
+    out_send.release()
             
 write = False
 thread_cli = threading.Thread(target=vr)
@@ -251,9 +255,7 @@ results = enggine(tensor)
 if not cap_send.isOpened():
   print('VideoCapture not opened')
   exit(0)
-if not out_send.isOpened():
-  print('VideoWriter not opened')
-  exit(0)
+
 
 
 print('Src opened, %dx%d @ %d fps' % (w, h, fps))
@@ -296,4 +298,4 @@ while True:
   if cv2.waitKey(1)&0xFF == ord('q'):
     break
 cap_send.release()
-out_send.release()
+
