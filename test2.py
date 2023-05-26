@@ -222,16 +222,17 @@ def vr():
         print('VideoWriter not opened')
         exit(0)
     while True:
-        if play:
-            if out_send.isOpened():
-                out_send.write(frame)
-            if cv2.waitKey(1)&0xFF == ord('q'):
-                break
+        event.wait()
+        event.clear()
+        if out_send.isOpened():
+            out_send.write(frame)
+        if cv2.waitKey(1)&0xFF == ord('q'):
+            break
     out_send.release()
             
 
 thread_cli = threading.Thread(target=vr)
-
+event = threading.Event()
 
 
 video_pipeline = f'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1 ! videoconvert ! appsink'
@@ -256,7 +257,7 @@ play = False
 
 thread_cli.start()
 while True:
-  play = False
+  #play = False
   ret,frame = cap_send.read()
   if not ret:
     print('empty frame')
@@ -286,8 +287,8 @@ while True:
                   0.75, [225, 255, 255],
                   thickness=2)
     
-  play = True
-  
+  #play = True
+  event.set()
   if cv2.waitKey(1)&0xFF == ord('q'):
     break
 cap_send.release()
