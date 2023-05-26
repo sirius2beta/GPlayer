@@ -7,7 +7,7 @@ cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
 w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
 h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
 fps = cap_send.get(cv2.CAP_PROP_FPS)
-out_send = cv2.VideoWriter('appsrc ! videoconvert ! video/x-raw,format=I420 !  nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=100.117.209.85 port=5201'\
+out_send = cv2.VideoWriter('appsrc ! videoconvert ! video/x-raw,format=I420 ! nvvideoconvert ! video/x-raw(memory:NVMM) ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=100.117.209.85 port=5201'\
          ,cv2.CAP_GSTREAMER\
          ,0\
          , 30\
