@@ -56,7 +56,7 @@ def blob(im: ndarray, return_seg: bool = False) -> Union[ndarray, Tuple]:
         return im
 enggine = TRTE.TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
-image = cv2.imread('data/zidane.jpg')
+image = cv2.imread('zidane.jpg')
 bgr, ratio, dwdh = letterbox(image, (W, H))
 rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 tensor = blob(rgb, return_seg=False)
