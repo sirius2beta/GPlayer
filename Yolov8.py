@@ -56,42 +56,74 @@ def blob(im: ndarray, return_seg: bool = False) -> Union[ndarray, Tuple]:
         return im
 enggine = TRTE.TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
-image = cv2.imread('zidane.jpg')
-bgr, ratio, dwdh = letterbox(image, (W, H))
-rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-tensor = blob(rgb, return_seg=False)
-dwdh = np.array(dwdh * 2, dtype=np.float32)
-tensor = np.ascontiguousarray(tensor)
-results = enggine(tensor)
-print(results)
 
-bboxes, scores, labels = results
-bboxes -= dwdh
-bboxes /= ratio
+def detect(image)
 
-CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-           'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
-           'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-           'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
-           'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-           'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
-           'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
-           'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
-           'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
-           'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
-           'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
-           'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
-           'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
-           'scissors', 'teddy bear', 'hair drier', 'toothbrush')
-for (bbox, score, label) in zip(bboxes, scores, labels):
-    bbox = bbox.round().astype(np.int32).tolist()
-    cls_id = int(label)
-    cls = CLASSES[cls_id]
-    color = (0,255,0)
-    cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
-    cv2.putText(image,
-                f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.75, [225, 255, 255],
-                thickness=2)
-cv2.imwrite("out.jpg", image)
+  bgr, ratio, dwdh = letterbox(image, (W, H))
+  rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+  tensor = blob(rgb, return_seg=False)
+  dwdh = np.array(dwdh * 2, dtype=np.float32)
+  tensor = np.ascontiguousarray(tensor)
+  results = enggine(tensor)
+  print(results)
+
+  bboxes, scores, labels = results
+  bboxes -= dwdh
+  bboxes /= ratio
+
+  CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
+             'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
+             'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+             'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe',
+             'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
+             'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat',
+             'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
+             'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
+             'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot',
+             'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
+             'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop',
+             'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
+             'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
+             'scissors', 'teddy bear', 'hair drier', 'toothbrush')
+  for (bbox, score, label) in zip(bboxes, scores, labels):
+      bbox = bbox.round().astype(np.int32).tolist()
+      cls_id = int(label)
+      cls = CLASSES[cls_id]
+      color = (0,255,0)
+      cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
+      cv2.putText(image,
+                  f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
+                  cv2.FONT_HERSHEY_SIMPLEX,
+                  0.75, [225, 255, 255],
+                  thickness=2)
+  return image
+
+video_pipeline = 'v4l2src device=/dev/video0 !  image/jpeg, width=640, height=480, framerate=30/1 ! jpegparse ! jpegdec ! videoconvert ! appsink'
+cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
+w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
+h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
+fps = cap_send.get(cv2.CAP_PROP_FPS)
+out_send = cv2.VideoWriter('appsrc ! videoconvert ! omxh264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240'\
+                           ,cv2.CAP_GSTREAMER\
+                           ,0\
+                           , fps\
+                           , (int(w), int(h))\
+                           , True)
+if not cap_send.isOpened() or not out_send.isOpened():
+  print('VideoCapture or VideoWriter not opened')
+  exit(0)
+
+print('Src opened, %dx%d @ %d fps' % (w, h, fps))
+
+while True:
+  ret,frame = cap_send.read()
+  if not ret:
+    print('empty frame')
+    break
+  frame = detect(frame)
+  if out_send.isOpened():
+    out_send.write(frame)
+  if cv2.waitKey(1)&0xFF == ord('q'):
+    break
+cap_send.release()
+out_send.release()
