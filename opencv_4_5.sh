@@ -9,7 +9,7 @@
 # license agreement from NVIDIA Corporation is strictly prohibited.
 #
 
-version="4.5.0"
+version="4.7.0"
 folder="workspace"
 
 echo "** Remove other OpenCV first"
