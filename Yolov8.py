@@ -240,7 +240,7 @@ while True:
     print('empty frame')
     break
 
-  results = enggine(tensor)
+  results = enggine(frame)
   bgr, ratio, dwdh = letterbox(frame, (W, H))
   rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
   tensor = blob(rgb, return_seg=False)
