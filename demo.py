@@ -8,8 +8,8 @@ def on_msg(topic, message):
   if topic == 'testcmd':
     print(f'{topic} : {message}')
 
-gplayer = GPlayer.GPlayer()
-gplayer.on_msg = on_msg
+#gplayer = GPlayer.GPlayer()
+#gplayer.on_msg = on_msg
 #video_pipeline = 'v4l2src device=/dev/video0 !  video/x-raw, format=YUY2, width=640, height=480, framerate=30/1 ! videoconvert ! appsink'
 video_pipeline = 'v4l2src device=/dev/video0 !  image/jpeg, width=640, height=480, framerate=30/1 ! jpegparse ! jpegdec ! videoconvert ! appsink'
 cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
