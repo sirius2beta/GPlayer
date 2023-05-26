@@ -71,63 +71,63 @@ def blob(im: ndarray, return_seg: bool = False) -> Union[ndarray, Tuple]:
         return im
 
 
+if __name__ == '__main__':
+
+  video_pipeline = 'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1! videoconvert ! video/x-raw,format=BGR ! appsink'
+  cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
+  w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
+  h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
+  fps = cap_send.get(cv2.CAP_PROP_FPS)
+  out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240'\
+                             ,cv2.CAP_GSTREAMER\
+                             ,0\
+                             , fps\
+                             , (int(w), int(h))\
+                             , True)
+  if not cap_send.isOpened():
+    print('VideoCapture not opened')
+    exit(0)
+  if not out_send.isOpened():
+    print('VideoWriter not opened')
+    exit(0)
 
 
-video_pipeline = 'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1! videoconvert ! video/x-raw,format=BGR ! appsink'
-cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
-w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
-h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
-fps = cap_send.get(cv2.CAP_PROP_FPS)
-out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240'\
-                           ,cv2.CAP_GSTREAMER\
-                           ,0\
-                           , fps\
-                           , (int(w), int(h))\
-                           , True)
-if not cap_send.isOpened():
-  print('VideoCapture not opened')
-  exit(0)
-if not out_send.isOpened():
-  print('VideoWriter not opened')
-  exit(0)
+  print('Src opened, %dx%d @ %d fps' % (w, h, fps))
+
+  while True:
+    ret,frame = cap_send.read()
+    if not ret:
+      print('empty frame')
+      break
+    enggine = TRTE.TRTEngine('yolov8s.engine')
+    H, W = enggine.inp_info[0].shape[-2:]
+
+    results = enggine(tensor)
+    bgr, ratio, dwdh = letterbox(frame, (W, H))
+    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+    tensor = blob(rgb, return_seg=False)
+    dwdh = np.array(dwdh * 2, dtype=np.float32)
+    tensor = np.ascontiguousarray(tensor)
 
 
-print('Src opened, %dx%d @ %d fps' % (w, h, fps))
+    bboxes, scores, labels = results
+    bboxes -= dwdh
+    bboxes /= ratio
+    for (bbox, score, label) in zip(bboxes, scores, labels):
+        bbox = bbox.round().astype(np.int32).tolist()
+        cls_id = int(label)
+        cls = CLASSES[cls_id]
+        color = (0,255,0)
+        cv2.rectangle(frame, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
+        cv2.putText(frame,
+                    f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.75, [225, 255, 255],
+                    thickness=2)
 
-while True:
-  ret,frame = cap_send.read()
-  if not ret:
-    print('empty frame')
-    break
-  enggine = TRTE.TRTEngine('yolov8s.engine')
-  H, W = enggine.inp_info[0].shape[-2:]
-  
-  results = enggine(tensor)
-  bgr, ratio, dwdh = letterbox(frame, (W, H))
-  rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-  tensor = blob(rgb, return_seg=False)
-  dwdh = np.array(dwdh * 2, dtype=np.float32)
-  tensor = np.ascontiguousarray(tensor)
-  
-  
-  bboxes, scores, labels = results
-  bboxes -= dwdh
-  bboxes /= ratio
-  for (bbox, score, label) in zip(bboxes, scores, labels):
-      bbox = bbox.round().astype(np.int32).tolist()
-      cls_id = int(label)
-      cls = CLASSES[cls_id]
-      color = (0,255,0)
-      cv2.rectangle(frame, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
-      cv2.putText(frame,
-                  f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
-                  cv2.FONT_HERSHEY_SIMPLEX,
-                  0.75, [225, 255, 255],
-                  thickness=2)
-  
-  if out_send.isOpened():
-    out_send.write(frame)
-  if cv2.waitKey(1)&0xFF == ord('q'):
-    break
-cap_send.release()
-out_send.release()
+    if out_send.isOpened():
+      out_send.write(frame)
+    if cv2.waitKey(1)&0xFF == ord('q'):
+      break
+  cap_send.release()
+  out_send.release()
