@@ -69,36 +69,9 @@ def blob(im: ndarray, return_seg: bool = False) -> Union[ndarray, Tuple]:
         return im, seg
     else:
         return im
-enggine = TRTE.TRTEngine('yolov8s.engine')
-H, W = enggine.inp_info[0].shape[-2:]
 
-def detect(image):
 
-  bgr, ratio, dwdh = letterbox(image, (W, H))
-  rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-  tensor = blob(rgb, return_seg=False)
-  dwdh = np.array(dwdh * 2, dtype=np.float32)
-  tensor = np.ascontiguousarray(tensor)
-  results = enggine(tensor)
-  print(results)
 
-  bboxes, scores, labels = results
-  bboxes -= dwdh
-  bboxes /= ratio
-
-  
-  for (bbox, score, label) in zip(bboxes, scores, labels):
-      bbox = bbox.round().astype(np.int32).tolist()
-      cls_id = int(label)
-      cls = CLASSES[cls_id]
-      color = (0,255,0)
-      cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), color, 2)
-      cv2.putText(image,
-                  f'{cls}:{score:.3f}', (bbox[0], bbox[1] - 2),
-                  cv2.FONT_HERSHEY_SIMPLEX,
-                  0.75, [225, 255, 255],
-                  thickness=2)
-  return image
 
 video_pipeline = 'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1! videoconvert ! video/x-raw,format=BGR ! appsink'
 cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
@@ -117,6 +90,8 @@ if not cap_send.isOpened():
 if not out_send.isOpened():
   print('VideoWriter not opened')
   exit(0)
+enggine = TRTE.TRTEngine('yolov8s.engine')
+H, W = enggine.inp_info[0].shape[-2:]
 
 print('Src opened, %dx%d @ %d fps' % (w, h, fps))
 
