@@ -264,7 +264,7 @@ print('Src opened, %dx%d @ %d fps' % (w, h, fps))
 
 
 
-
+thread_cli.start()
 while True:
   ret,frame = cap_send.read()
   if not ret:
