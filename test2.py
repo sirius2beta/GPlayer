@@ -235,6 +235,7 @@ thread_cli = threading.Thread(target=vr)
 event = threading.Event()
 
 enggine = TRTEngine('yolov8s.engine')
+H, W = enggine.inp_info[0].shape[-2:]
 
 video_pipeline = f'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1 ! videoconvert ! appsink'
 cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
