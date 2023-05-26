@@ -213,7 +213,7 @@ CLASSES = ('person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
 def vr():
     global write
     global frame
-    out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=127.0.0.1 port=5240'\
+    out_send = cv2.VideoWriter('appsrc !  nvvidconv ! nvv4l2h264enc ! rtph264pay pt=96 config-interval=1 ! udpsink host=100.117.209.85 port=5240'\
                                    ,cv2.CAP_GSTREAMER\
                                    ,0\
                                    , 30\
