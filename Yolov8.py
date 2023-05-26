@@ -110,7 +110,10 @@ out_send = cv2.VideoWriter('appsrc ! videoconvert ! omxh264enc ! rtph264pay pt=9
                            , (int(w), int(h))\
                            , True)
 if not cap_send.isOpened() or not out_send.isOpened():
-  print('VideoCapture or VideoWriter not opened')
+  print('VideoCapture not opened')
+  exit(0)
+if not out_send.isOpened():
+  print('VideoWriter not opened')
   exit(0)
 
 print('Src opened, %dx%d @ %d fps' % (w, h, fps))
