@@ -215,6 +215,10 @@ class engineA:
 		self.H, self.W = self.enggine.inp_info[0].shape[-2:]
 	def detect(self, tensor):
 		return self.enggine(tensor)
+	def W(self):
+		return self.W
+	def H(self):
+		return self.H
 		
 def vr():
     global write
@@ -268,7 +272,7 @@ while True:
     break
 
   
-  bgr, ratio, dwdh = letterbox(frame, (W, H))
+  bgr, ratio, dwdh = letterbox(frame, (engine.W, engine.H))
   rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
   tensor = blob(rgb, return_seg=False)
   dwdh = np.array(dwdh * 2, dtype=np.float32)
