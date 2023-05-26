@@ -236,7 +236,7 @@ print('Src opened, %dx%d @ %d fps' % (w, h, fps))
 
 
 
-image = cv2.imread('data/zidane.jpg')
+image = cv2.imread('zidane.jpg')
 bgr, ratio, dwdh = letterbox(image, (W, H))
 rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 tensor = blob(rgb, return_seg=False)
