@@ -224,7 +224,7 @@ def vr():
             if out_send.isOpened():
                 out_send.write(frame)
             
-write = false
+write = False
 thread_cli = threading.Thread(target=vr)
 enggine = TRTEngine('yolov8s.engine')
 H, W = enggine.inp_info[0].shape[-2:]
