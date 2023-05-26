@@ -12,7 +12,7 @@ def on_msg(topic, message):
 #gplayer.on_msg = on_msg
 #video_pipeline = 'v4l2src device=/dev/video0 !  video/x-raw, format=YUY2, width=640, height=480, framerate=30/1 ! videoconvert ! appsink'
 video_pipeline = 'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1! videoconvert ! video/x-raw,format=BGR ! appsink'
-cap_send = cv2.VideoCapture(video_pipeline)
+cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
 w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
 h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
 fps = cap_send.get(cv2.CAP_PROP_FPS)
