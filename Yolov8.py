@@ -22,7 +22,7 @@ class TRTEngine:
         self.__init_engine()
         self.__init_bindings()
         self.__warm_up()
-
+        self.cfx = cuda.device(0).make_context
     def __init_engine(self) -> None:
         logger = trt.Logger(trt.Logger.WARNING)
         trt.init_libnvinfer_plugins(logger, namespace='')
