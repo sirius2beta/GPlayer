@@ -2,7 +2,7 @@ import GPlayer
 import time
 import cv2
 
-video_pipeline = f'v4l2src device=/dev/video0 ! image/jpeg, width=(int)640, height=(int)480 !  jpegparse ! jpegdec ! appsink'
+video_pipeline = f'v4l2src device=/dev/video0 ! video/x-raw, format=YUY2, width=640, height=480, framerate=30/1 ! appsink'
 cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
 w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
 h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
