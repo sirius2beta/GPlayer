@@ -2,7 +2,7 @@ import GPlayer
 import time
 import cv2
 
-video_pipeline = 'video/x-raw, format=BGR ! videoconvert ! appsink'
+video_pipeline = 'videotestsrc ! video/x-raw, format=BGR ! videoconvert ! appsink'
 cap_send = cv2.VideoCapture(video_pipeline, cv2.CAP_GSTREAMER)
 w = cap_send.get(cv2.CAP_PROP_FRAME_WIDTH)
 h = cap_send.get(cv2.CAP_PROP_FRAME_HEIGHT)
