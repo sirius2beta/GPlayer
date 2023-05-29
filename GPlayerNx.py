@@ -8,6 +8,10 @@ import socket
 gi.require_version("Gst", "1.0")
 from gi.repository import Gst, GLib, GObject
 
+
+
+
+
 class GPlayer:
 	def __init__(self):
 		self.BOAT_NAME = 'usv1'
