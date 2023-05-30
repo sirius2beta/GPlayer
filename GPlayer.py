@@ -4,6 +4,11 @@ import subprocess
 import time
 import threading
 import socket
+import struct
+
+HEARTBEAT = '\x10'
+FORMAT = '\x20'
+COMMAND = '\x30'
 
 gi.require_version("Gst", "1.0")
 from gi.repository import Gst, GLib, GObject
@@ -136,28 +141,31 @@ class GPlayer:
 				break
 			try:
 				indata, addr = self.server.recvfrom(1024)
-				indata = indata.decode()
+				
 			except:
 				continue
 
-			#print(f'message from: {str(addr)}, data: {indata}')
-			header = indata.split()[0]
-
-			if header == 'HB':
-				self.BOAT_NAME = indata.split()[2]
-				primary = indata.split()[3]
+			print(f'message from: {str(addr)}, data: {indata}')
+			
+			indata = indata.decode()
+			header = indata[0]
+			indata = indata[1:]
+			if header == HEARTBEAT:
+				print("HB")
+				self.BOAT_NAME = indata.split()[0]
+				primary = indata.split()[2]
 				if primary == 'P':
 					self.P_CLIENT_IP = indata.split()[1]
 				else:
 					self.S_CLIENT_IP = indata.split()[1]
 
-			elif header == 'qformat':
+			elif header == FORMAT:
 				print("format")
 				msg = 'format '+self.BOAT_NAME+'\n'+'\n'.join(self.camera_format)
 
 				self.client.sendto(msg.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
 				self.client.sendto(msg.encode(),(self.S_CLIENT_IP,self.OUT_PORT))
-			elif header == 'cmd':
+			elif header == COMMAND:
 				print("cmd")
 				print(indata)
 				cformat = indata.split()[1:6]
