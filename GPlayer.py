@@ -80,6 +80,7 @@ class GPlayer:
 	def aliveLoop(self):
 		print('client started...')
 		run = True
+		checkAlive = False
 		while run:
 			if self.thread_terminate is True:
 				break
@@ -98,6 +99,7 @@ class GPlayer:
 				print(f"Secondarysend to: {self.S_CLIENT_IP}:{self.OUT_PORT}")
 			except:
 				print(f"Secondary unreached: {self.S_CLIENT_IP}:{self.OUT_PORT}")
+			
 
 	def createPipelines(self):
 		for i in self.camera_format:
