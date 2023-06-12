@@ -84,17 +84,18 @@ class GPlayer:
 		while run:
 			if self.thread_terminate is True:
 				break
-			beat = 'alive ' + self.BOAT_NAME
+			#beat = b'\x10' + self.BOAT_NAME.encode()
+			beat = b'\x10'
 			# Send primary heartbeat every 0.5s
 			try:
-				self.client.sendto(beat.encode(),(self.P_CLIENT_IP,self.OUT_PORT))
+				self.client.sendto(beat,(self.P_CLIENT_IP,self.OUT_PORT))
 				time.sleep(0.5)
 				print(f"Primary send to: {self.P_CLIENT_IP}:{self.OUT_PORT}")
 			except:
 				print(f"Primary unreached: {self.P_CLIENT_IP}:{self.OUT_PORT}")
 			# Send secondary heartbeat every 0.5s
 			try:
-				self.client.sendto(beat.encode(),(self.S_CLIENT_IP, self.OUT_PORT))
+				self.client.sendto(beat,(self.S_CLIENT_IP, self.OUT_PORT))
 				time.sleep(0.5)
 				print(f"Secondarysend to: {self.S_CLIENT_IP}:{self.OUT_PORT}")
 			except:
@@ -154,12 +155,12 @@ class GPlayer:
 			indata = indata[1:]
 			if header == HEARTBEAT:
 				print("HB")
-				self.BOAT_NAME = indata.split()[0]
+				self.BOAT_NAME = indata.split()[1]
 				primary = indata.split()[2]
 				if primary == 'P':
-					self.P_CLIENT_IP = indata.split()[1]
+					self.P_CLIENT_IP = indata.split()[0]
 				else:
-					self.S_CLIENT_IP = indata.split()[1]
+					self.S_CLIENT_IP = indata.split()[0]
 
 			elif header == FORMAT:
 				print("format")
